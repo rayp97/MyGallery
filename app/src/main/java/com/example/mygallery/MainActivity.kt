@@ -8,10 +8,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,13 +71,34 @@ class MainActivity : AppCompatActivity() {
                 null,
                 MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC")// 찍은 날짜 내림차순
 
+        val fragments = ArrayList<Fragment>()
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 //사진 경로 uri 가져 오기
                 val uri = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
                 Log.d("MainActivity", uri)
+                fragments.add(PhotoFragment.newInstance(uri))
             }
             cursor.close()
         }
+
+        //어뎁터
+        val adapter = MyPagerAdapter(supportFragmentManager)
+        adapter.updateFraments(fragments)
+        viewPager.adapter = adapter
+
+        //3초마다 자동 슬라이드
+        timer(period = 3000) {
+            runOnUiThread {
+                if (viewPager.currentItem < adapter - 1) {
+                    viewPager.currentItem = viewPager.currentItem + 1
+                } else {
+                    viewPager.currentItem = 0
+                }
+            }
+        }
+
+
+
     }
 }
