@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         //3초마다 자동 슬라이드
         timer(period = 3000) {
             runOnUiThread {
-                if (viewPager.currentItem < adapter - 1) {
+                if (viewPager.currentItem < adapter.count - 1) {
                     viewPager.currentItem = viewPager.currentItem + 1
                 } else {
                     viewPager.currentItem = 0
